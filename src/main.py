@@ -1,12 +1,15 @@
+import streamlit.web.bootstrap
+streamlit.web.bootstrap._is_running_with_streamlit = lambda: False
+
 import streamlit as st
 from data_handler import load_data
-from pages import visaogeral
-from pages import vendasproduto
-from pages import marketing
-from pages import atendimento
-from pages import insightscorrelacoes
+from app_pages import visaogeral, vendasproduto, marketing, atendimento
 
-st.set_page_config(layout="wide")
+# ==== TÍTULO DA ABA DO NAVEGADOR ====
+st.set_page_config(
+    page_title="EcoMov",   # <- Nome que aparece na aba do Google/Chrome
+    layout="wide"
+)
 
 st.sidebar.title("Navegação")
 st.sidebar.markdown("Selecione uma página abaixo:")
@@ -21,7 +24,6 @@ page = st.sidebar.selectbox(
         "Vendas & Produto",
         "Marketing",
         "Atendimento",
-        "Insights & Correlações",
     ],
 )
 
@@ -33,5 +35,3 @@ elif page == "Marketing":
     marketing.app(df_marketing, df_financeiro)
 elif page == "Atendimento":
     atendimento.app(df_atendimento)
-elif page == "Insights & Correlações":
-    insightscorrelacoes.app(df_atendimento, df_financeiro, df_vendas, df_marketing)

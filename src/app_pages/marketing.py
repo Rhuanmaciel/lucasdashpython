@@ -9,7 +9,7 @@ from plotly.colors import sample_colorscale
 from typing import Tuple
 
 # -------------------- Config e meta --------------------
-st.set_page_config(page_title="Dashboard: Marketing", layout="wide")
+st.set_page_config(page_title="Marketing", layout="wide")
 
 # -------------------- Utilitários e caches --------------------
 @st.cache_data
@@ -68,7 +68,7 @@ def fmt_mult(v):
 # -------------------- App principal --------------------
 
 def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
-    st.title("📊 Dashboard: Marketing")
+    st.title("Dashboard: Marketing")
 
     # --- Preparação dos dados (defensiva) ---
     df_marketing = df_marketing.copy() if df_marketing is not None else pd.DataFrame()
@@ -119,20 +119,14 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
         lambda x: "Excelente" if pd.notna(x) and x >= 3 else ("Bom" if pd.notna(x) and x >= 2 else "Ruim")
     )
 
-    # ---------- Sidebar / UI ----------
-    st.sidebar.markdown("## Preferências do Gráfico")
-
-    color_mode = st.sidebar.radio(
-        "Modo de cor — ROAS por Tipo de Mídia",
-        options=["Cor única (limpa)", "Destacar melhor (amarelo)"],
-        index=0
-    )
-    base_color = st.sidebar.color_picker("Cor base (para barras)", "#2ECC71")
-    highlight_color = st.sidebar.color_picker("Cor de destaque (melhor mídia)", "#FFD700")
-
-    uniform_scales = st.sidebar.checkbox("Small multiples — Escala uniforme entre facetas", value=True)
-    show_regression = st.sidebar.checkbox("Mostrar regressão no scatter (R²)", value=True)
-    use_scattergl_threshold = st.sidebar.number_input("Usar ScatterGL se pontos >", min_value=500, max_value=100000, value=2000)
+    # ---------- REMOVIDA A SIDEBAR ----------
+    # Em vez de UI, definimos valores padrão para não quebrar o código
+    color_mode = "Cor única (limpa)"   # antes: st.sidebar.radio(...)
+    base_color = "#2ECC71"             # antes: st.sidebar.color_picker(...)
+    highlight_color = "#FFD700"        # antes: st.sidebar.color_picker(...)
+    uniform_scales = True              # antes: st.sidebar.checkbox(...)
+    show_regression = True             # antes: st.sidebar.checkbox(...)
+    use_scattergl_threshold = 2000     # antes: st.sidebar.number_input(...)
 
     # ---------- KPIs ----------
     st.subheader("📌 Indicadores Gerais")
@@ -516,7 +510,8 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
         if pd.notna(melhor_campanha):
             insights.append(f"- Campanha mais lucrativa: **{melhor_campanha}**.")
         if pd.notna(pior_campanha):
-            insights.append(f"- Campanha com menor lucro: **{pior_campanha}**.")
+            insights.append(("- Campanha com menor lucro: **{pior_campanha}**.") if pd.notna(pior_campanha) else None)
+
         insights.append(f"- { (df_marketing['Lucro'] > 0).mean() * 100:.1f}% das campanhas geraram lucro.")
     else:
         insights.append("- Sem dados para gerar insights automáticos.")
@@ -540,16 +535,3 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
             st.write(r)
     else:
         st.write("- Nenhuma recomendação automática gerada (dados equilibrados).")
-
-
-# -------------------- Ponto de entrada (para testes locais) --------------------
-if __name__ == '__main__':
-    # Exemplo mínimo para testar a interface localmente
-    example = pd.DataFrame({
-        'Campanha': ['Campanha_1','Campanha_2','Campanha_3','Campanha_4','Campanha_5'],
-        'Tipo_Midia': ['Outdoor','Outdoor','TV','Rádio','Online'],
-        'Investimento': [6612,16386,17955,8061,5000],
-        'Receita_Gerada': [2332,29277,5327,16332,7000],
-        'Data_Campanha': pd.to_datetime(['2022-05-19','2023-01-26','2023-10-19','2022-03-14','2023-06-01'])
-    })
-    app(example, None)
