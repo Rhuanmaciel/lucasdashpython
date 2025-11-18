@@ -3,7 +3,7 @@ streamlit.web.bootstrap._is_running_with_streamlit = lambda: False
 
 import streamlit as st
 from data_handler import load_data
-from app_pages import visaogeral, vendasproduto, marketing, atendimento
+from app_pages import visaogeral, vendasproduto, marketing, atendimento, clientes
 
 # ==== TÍTULO DA ABA DO NAVEGADOR ====
 st.set_page_config(
@@ -24,6 +24,7 @@ page = st.sidebar.selectbox(
         "Vendas & Produto",
         "Marketing",
         "Atendimento",
+        "Análise de Clientes",
     ],
 )
 
@@ -35,3 +36,5 @@ elif page == "Marketing":
     marketing.app(df_marketing, df_financeiro)
 elif page == "Atendimento":
     atendimento.app(df_atendimento)
+elif page == "Análise de Clientes":
+    clientes.app(df_clientes)
