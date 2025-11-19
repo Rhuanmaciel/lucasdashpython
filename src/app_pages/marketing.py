@@ -70,16 +70,13 @@ def fmt_mult(v):
 def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
     st.title("Dashboard: Marketing")
 
-    # --- Preparação dos dados (defensiva) ---
     df_marketing = df_marketing.copy() if df_marketing is not None else pd.DataFrame()
     df_financeiro = df_financeiro.copy() if df_financeiro is not None else pd.DataFrame()
 
-    # normalize expected columns
     for col in ["Investimento", "Receita_Gerada"]:
         if col not in df_marketing.columns:
             df_marketing[col] = 0
 
-    # ensure textual identifier columns exist to avoid KeyErrors in UI
     if "Campanha" not in df_marketing.columns:
         df_marketing["Campanha"] = df_marketing.index.astype(str)
     if "Tipo_Midia" not in df_marketing.columns:
@@ -119,14 +116,12 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
         lambda x: "Excelente" if pd.notna(x) and x >= 3 else ("Bom" if pd.notna(x) and x >= 2 else "Ruim")
     )
 
-    # ---------- REMOVIDA A SIDEBAR ----------
-    # Em vez de UI, definimos valores padrão para não quebrar o código
-    color_mode = "Cor única (limpa)"   # antes: st.sidebar.radio(...)
-    base_color = "#2ECC71"             # antes: st.sidebar.color_picker(...)
-    highlight_color = "#FFD700"        # antes: st.sidebar.color_picker(...)
-    uniform_scales = True              # antes: st.sidebar.checkbox(...)
-    show_regression = True             # antes: st.sidebar.checkbox(...)
-    use_scattergl_threshold = 2000     # antes: st.sidebar.number_input(...)
+    color_mode = "Cor única (limpa)"
+    base_color = "#2ECC71"
+    highlight_color = "#FFD700"
+    uniform_scales = True
+    show_regression = True
+    use_scattergl_threshold = 2000
 
     # ---------- KPIs ----------
     st.subheader("📌 Indicadores Gerais")
@@ -271,7 +266,6 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
 
     st.markdown("---")
 
-    # ---------- Scatter geral + Equilíbrio + Regressão (se habilitado) ----------
     st.markdown("### 🔎 Investimento vs Receita — Visão Geral (limpa)")
     if df_marketing.empty:
         st.info("Sem dados para o gráfico de dispersão.")
@@ -331,7 +325,6 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
         st.plotly_chart(fig_scatter, use_container_width=True)
 
     st.markdown("### Small Multiples — Investimento vs Receita por Tipo de Mídia")
-    # ---------- Small multiples: reconstruir manualmente para garantir a linha de equilíbrio em cada facet ----------
     medias = df_marketing["Tipo_Midia"].dropna().unique().tolist()
     if len(medias) == 0:
         st.info("Sem dados por Tipo de Mídia para small multiples.")
@@ -402,7 +395,6 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
                     row=r, col=c
                 )
 
-                # linha de equilíbrio local
                 fig_facet.add_trace(
                     go.Scatter(x=[0, sub_max], y=[0, sub_max], mode="lines",
                                line=dict(dash="dash", color="black", width=1), showlegend=False, hoverinfo='none'),
@@ -475,7 +467,6 @@ def app(df_marketing: pd.DataFrame = None, df_financeiro: pd.DataFrame = None):
 
     st.markdown("---")
 
-    # ---------- Tabela detalhada + download ----------
     st.markdown("### 🗂️ Tabela Detalhada das Campanhas")
     cols_show = ["Campanha", "Tipo_Midia", "Investimento", "Receita_Gerada", "Lucro", "ROAS", "CPRG", "Desempenho", "Data_Campanha"]
     available = [c for c in cols_show if c in df_marketing.columns]

@@ -7,35 +7,32 @@ def app(df_atendimento, df_clientes, df_financeiro, df_marketing, df_vendas):
     st.title("Dashboard: Visão Geral")
 
     # ==========================================================================================
-    # 🧹 1. TRATAMENTO E NORMALIZAÇÃO DO DATAFRAME FINANCEIRO (PARA EVITAR DUPLICAÇÕES)
+    #  1. TRATAMENTO E NORMALIZAÇÃO DO DATAFRAME FINANCEIRO (PARA EVITAR DUPLICAÇÕES)
     # ==========================================================================================
 
-    # Converter colunas numéricas
     df_financeiro['Receita_Bruta'] = pd.to_numeric(df_financeiro['Receita_Bruta'], errors='coerce').fillna(0)
     df_financeiro['Lucro_Líquido'] = pd.to_numeric(df_financeiro['Lucro_Líquido'], errors='coerce').fillna(0)
     df_financeiro['Despesas_Operacionais'] = pd.to_numeric(df_financeiro['Despesas_Operacionais'], errors='coerce').fillna(0)
     df_financeiro['Margem (%)'] = pd.to_numeric(df_financeiro['Margem (%)'], errors='coerce').fillna(0)
 
-    # Normalizar datas para o início do mês
     df_financeiro['Mês'] = pd.to_datetime(df_financeiro['Mês'], errors='coerce')
     df_financeiro['Mês'] = df_financeiro['Mês'].dt.to_period('M').dt.to_timestamp()
 
-    # CONSOLIDAR por mês (evita duplicações)
     df_financeiro_mensal = df_financeiro.groupby('Mês', as_index=False).agg({
         'Receita_Bruta': 'sum',
         'Despesas_Operacionais': 'sum',
         'Lucro_Líquido': 'sum',
-        'Margem (%)': 'mean'    # margem deve ser média do mês
+        'Margem (%)': 'mean'
     })
 
     # ==========================================================================================
-    # 🧹 2. TRATAMENTO DE OUTRAS TABELAS
+    #  2. TRATAMENTO DE OUTRAS TABELAS
     # ==========================================================================================
     df_marketing['Investimento'] = pd.to_numeric(df_marketing['Investimento'], errors='coerce').fillna(0)
     df_vendas['Valor_Total'] = pd.to_numeric(df_vendas['Valor_Total'], errors='coerce').fillna(0)
 
     # ==========================================================================================
-    # 📊 3. KPI CARDS (AGORA BASEADOS NA TABELA MENSAL CONSOLIDADA)
+    # 3. KPI CARDS
     # ==========================================================================================
     st.markdown("### Indicadores Chave de Performance")
     col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -64,7 +61,7 @@ def app(df_atendimento, df_clientes, df_financeiro, df_marketing, df_vendas):
         st.metric("Investimento Marketing", f"R$ {investimento_marketing:,.2f}")
 
     # ==========================================================================================
-    # 📈 4. GRÁFICO PRINCIPAL – RECEITA VS LUCRO POR MÊS
+    # 4. GRÁFICO PRINCIPAL – RECEITA VS LUCRO POR MÊS
     # ==========================================================================================
     st.markdown("### Tendência Mensal: Receita Bruta vs. Lucro Líquido")
 
@@ -100,7 +97,7 @@ def app(df_atendimento, df_clientes, df_financeiro, df_marketing, df_vendas):
     st.plotly_chart(fig_trend, use_container_width=True)
 
     # ==========================================================================================
-    # 🍰 5. RECEITA POR CATEGORIA
+    # 5. RECEITA POR CATEGORIA
     # ==========================================================================================
     st.markdown("### Receita por Categoria de Produto")
 
@@ -114,7 +111,7 @@ def app(df_atendimento, df_clientes, df_financeiro, df_marketing, df_vendas):
     st.plotly_chart(fig_categoria, use_container_width=True)
 
     # ==========================================================================================
-    # 📉 6. MARGEM MENSAL
+    # 6. MARGEM MENSAL
     # ==========================================================================================
     st.markdown("### Margem Percentual Mensal")
 

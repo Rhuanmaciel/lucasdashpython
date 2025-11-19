@@ -3,14 +3,12 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Função para formatar moeda em pt-BR (usar nas tabelas)
 def formatar_moeda(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 def app(df_vendas):
     st.title("Dashboard: Vendas & Produto")
 
-    # Garantir tipos corretos
     df_vendas['Valor_Total'] = pd.to_numeric(df_vendas['Valor_Total'], errors='coerce')
     df_vendas['Data_Venda'] = pd.to_datetime(df_vendas['Data_Venda'], errors='coerce')
 

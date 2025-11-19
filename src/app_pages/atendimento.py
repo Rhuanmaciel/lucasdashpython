@@ -315,7 +315,6 @@ def app(df_atendimento):
 
     st.markdown("### Tempo de Resolução (h) vs Avaliação do Cliente")
     if df['Tempo_Resolucao'].notna().any() and df['Avaliacao_Cliente'].notna().any():
-        # adicionar coluna temporária com tempo formatado para hover
         df['_Tempo_Formatado_Hover'] = df['Tempo_Resolucao'].apply(lambda x: _hours_to_hm(x))
         fig_scatter = px.scatter(
             df,
@@ -326,7 +325,6 @@ def app(df_atendimento):
         )
         fig_scatter.update_traces(hovertemplate='<b>ID:</b> %{customdata[0]}<br><b>Motivo:</b> %{customdata[1]}<br><b>Canal:</b> %{customdata[2]}<br><b>Tempo:</b> %{customdata[3]}<br><b>Avaliação:</b> %{y:.2f}<extra></extra>')
         st.plotly_chart(fig_scatter, use_container_width=True)
-        # remover coluna temporária
         df.drop(columns=['_Tempo_Formatado_Hover'], inplace=True, errors='ignore')
     else:
         st.info("Dados insuficientes para scatter (Tempo_Resolucao ou Avaliacao_Cliente ausentes).")
@@ -359,6 +357,5 @@ def app(df_atendimento):
     display_df = format_display_dataframe_for_view(df)
     st.dataframe(display_df.head(200))
 
-    # Download do dataset limpo (dados originais, não formatados para exibição)
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button(label='Download do dataset limpo (CSV)', data=csv, file_name='dataset_limpo_atendimento.csv', mime='text/csv')
