@@ -4,7 +4,6 @@ import plotly.express as px
 
 def app(df_clientes):
     st.title("Análise de Clientes")
-    # Garantias finais (apenas segurança)
     df_clientes["Renda"] = pd.to_numeric(df_clientes["Renda"], errors="coerce")
     df_clientes["Data_Cadastro"] = pd.to_datetime(df_clientes["Data_Cadastro"], errors="coerce")
 
